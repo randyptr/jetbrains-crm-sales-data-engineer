@@ -5,7 +5,6 @@ A data engineering pipeline that ingests raw CRM subscription data, cleans it, m
 ---
 
 ## What this project does
-
 SaaS companies like JetBrains need to understand revenue trends across their customer base. This pipeline answers key business questions:
 
 - **How much recurring revenue is the business generating each month (MRR)?**
@@ -18,9 +17,8 @@ The pipeline takes raw CRM exports, cleans them, organizes them into a star sche
 ---
 
 ## Architecture
-
 ```
-┌─────────────────────────────────────────────────────┐
+-------------------------------------------------------
 │  SOURCE LAYER  (00_schema + 01_seed)                │
 │                                                     │
 │  Tables: raw_customers, raw_subscriptions,          │
@@ -30,10 +28,10 @@ The pipeline takes raw CRM exports, cleans them, organizes them into a star sche
 │    - Stores the original CRM data as-is             │
 │    - Never modified or deleted after load           │
 │    - Acts as the single source of truth             │
-└─────────────────────────────────────────────────────┘
+-------------------------------------------------------
                         │
                         ▼
-┌─────────────────────────────────────────────────────┐
+-------------------------------------------------------
 │  STAGING LAYER  (02_staging)                        │
 │                                                     │
 │  Tables: stg_customers, stg_subscriptions,          │
@@ -46,10 +44,10 @@ The pipeline takes raw CRM exports, cleans them, organizes them into a star sche
 │                                                     │
 │  dq_alerts: logs every data quality issue found     │
 │             without blocking the pipeline           │
-└─────────────────────────────────────────────────────┘
+-------------------------------------------------------
                         │
                         ▼
-┌─────────────────────────────────────────────────────┐
+-------------------------------------------------------
 │  DWH LAYER  (03_dwh)                                │
 │                                                     │
 │  Tables: dim_customers, dim_plans,                  │
@@ -62,10 +60,10 @@ The pipeline takes raw CRM exports, cleans them, organizes them into a star sche
 │    - Adds computed columns like                     │
 │      subscription_duration_days, monthly_revenue,   │
 │      and subscription_status                        │
-└─────────────────────────────────────────────────────┘
+-------------------------------------------------------
                         │
                         ▼
-┌─────────────────────────────────────────────────────┐
+-------------------------------------------------------
 │  DATA MART  (04_mart + 05_analytics)                │
 │                                                     │
 │  Tables: dm_sales_performance,                      │
@@ -76,7 +74,7 @@ The pipeline takes raw CRM exports, cleans them, organizes them into a star sche
 │    - Joins all layers into one business-ready table │
 │    - One row per subscription with all metrics      │
 │    - Exposes analytical views for direct querying   │
-└─────────────────────────────────────────────────────┘
+-------------------------------------------------------
 ```
 
 ---
@@ -87,13 +85,11 @@ The pipeline takes raw CRM exports, cleans them, organizes them into a star sche
 ---
 
 ## Database schema
-
 ![Database schema](./image/db_schema.png)
 
 ---
 
 ## Data quality checks
-
 Every pipeline run scans raw data and logs issues to `dq_alerts` without blocking the load:
 
 | Check | What it catches |
@@ -121,7 +117,6 @@ The staging layer also silently filters:
 In BigQuery console, create a dataset named `crm_dwh` in your project with any region.
 
 **2. Run SQL files in order**
-
 | Step | File | What it does |
 |------|------|-------------|
 | 1 | `00_schema.sql` | Creates raw tables |
